@@ -22,12 +22,6 @@
 - Missing required fields must be rejected.
 - All validation errors must return HTTP 400 with a JSON body containing a `message` field.
 
-### REQ-04: Frontend Conversion Form
-
-- The user must be able to enter a numeric value, select source and target units, and submit.
-- On success, the converted result is displayed.
-- On validation error, the error message is displayed.
-
 ## Acceptance Criteria
 
 ### AC-01: Successful Conversion
@@ -59,18 +53,6 @@ Then the system returns HTTP 400 with a message indicating invalid input.
 Given a request missing the `value` field,
 When the user submits a conversion,
 Then the system returns HTTP 400.
-
-### AC-06: Frontend Displays Result
-
-Given a successful conversion,
-When the API responds,
-Then the frontend displays the converted value with source and target units.
-
-### AC-07: Frontend Displays Error
-
-Given a validation error from the API,
-When the response is received,
-Then the frontend displays the error message to the user.
 
 ## Business Rules
 
