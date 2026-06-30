@@ -1,0 +1,10 @@
+flowchart TB
+  user["User"]
+  subgraph system["unitconv"]
+    fe["Web App (react)<br/>[fe]"]
+    be["Backend API (fastapi)<br/>[be]"]
+    db[("PostgreSQL 16")]
+  end
+  user -->|uses| fe
+  fe -->|REST / OpenAPI 'api'| be
+  be -->|reads/writes| db

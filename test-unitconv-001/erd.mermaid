@@ -1,0 +1,24 @@
+erDiagram
+  ConversionRequest {
+    uuid id PK
+    number value
+    string sourceUnit
+    string targetUnit
+  }
+  ConversionResult {
+    uuid id PK
+    number inputValue
+    string sourceUnit
+    string targetUnit
+    number result
+  }
+  ValidationError {
+    uuid id PK
+    string message
+    string field
+  }
+  Unit {
+    uuid id PK
+    string name
+    string system
+  }

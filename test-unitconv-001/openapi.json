@@ -1,0 +1,150 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "unitconv API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/convert": {
+      "post": {
+        "summary": "Convert a numeric measurement from a source unit to a target unit",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversionResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/units": {
+      "get": {
+        "summary": "List supported units and their systems (metric/imperial)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Unit"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConversionRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "value": {
+            "type": "number"
+          },
+          "sourceUnit": {
+            "type": "string"
+          },
+          "targetUnit": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "value",
+          "sourceUnit",
+          "targetUnit"
+        ]
+      },
+      "ConversionResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "inputValue": {
+            "type": "number"
+          },
+          "sourceUnit": {
+            "type": "string"
+          },
+          "targetUnit": {
+            "type": "string"
+          },
+          "result": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "inputValue",
+          "sourceUnit",
+          "targetUnit",
+          "result"
+        ]
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "message": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "message"
+        ]
+      },
+      "Unit": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "system": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "system"
+        ]
+      }
+    }
+  }
+}
