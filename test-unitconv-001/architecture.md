@@ -1,14 +1,14 @@
 # unitconv - Solution Architecture
 
 ## Overview
-Stateless measurement conversion web service exposing a FastAPI backend and React frontend supporting metres<->feet, kilometres<->miles, and litres<->gallons with clear validation and measurable NFRs.
+Stateless measurement conversion web service exposing a Spring Boot backend and React frontend supporting metres<->feet, kilometres<->miles, and litres<->gallons with clear validation and measurable NFRs.
 
-The service is a small, stateless HTTP API with simple validation and low computational needs. Python + FastAPI enables very fast development, lightweight async endpoints, and clear request/response validation (Pydantic). React is chosen for a single-page web UI with composable form and result components.
+The service is a small, stateless HTTP API with simple validation and low computational needs. Java + Spring Boot enables robust development, well-structured layered architecture, and clear request/response validation (Bean Validation). React is chosen for a single-page web UI with composable form and result components.
 
 ## Technology Stack
 | Layer | Choice |
 |-------|--------|
-| Backend | python / fastapi 0.115.x |
+| Backend | java / spring-boot 3.4.x |
 | Frontend | typescript / react |
 | Datastore | PostgreSQL 16 |
 
@@ -19,21 +19,21 @@ The service is a small, stateless HTTP API with simple validation and low comput
 | fe | unitconv-frontend | frontend |
 
 ## Container View (C4)
-```mermaid
+\`\`\`mermaid
 flowchart TB
   user["User"]
   subgraph system["unitconv"]
     fe["Web App (react)<br/>[fe]"]
-    be["Backend API (fastapi)<br/>[be]"]
+    be["Backend API (spring-boot)<br/>[be]"]
     db[("PostgreSQL 16")]
   end
   user -->|uses| fe
   fe -->|REST / OpenAPI 'api'| be
   be -->|reads/writes| db
-```
+\`\`\`
 
 ## Data Model
-```mermaid
+\`\`\`mermaid
 erDiagram
   ConversionRequest {
     uuid id PK
@@ -58,15 +58,15 @@ erDiagram
     string name
     string system
   }
-```
+\`\`\`
 
 ## API Contract
-REST contract FE->BE defined in `openapi.json` (OpenAPI 3.0.3). The frontend depends on this contract.
+REST contract FE->BE defined in \`openapi.json\` (OpenAPI 3.0.3). The frontend depends on this contract.
 
 ## Components
 | Component | Repo | Responsibility |
 |-----------|------|----------------|
-| HTTP API (FastAPI) | be | Expose REST endpoints (/api/convert, /api/units), request/response validation, error handling. |
+| REST Controller | be | Expose REST endpoints (/api/convert, /api/units), request/response validation via Bean Validation, error handling via @RestControllerAdvice. |
 | Conversion Service | be | Core conversion logic (metres<->feet, kilometres<->miles, litres<->gallons), unit compatibility checks, numeric precision handling. |
 | Validation Module | be | Input validation (numeric parsing, compatible unit pairs), constructs ValidationError responses for invalid requests. |
 | Unit Definitions | be | Authoritative list of supported units and mappings used by the Conversion Service and exposed via /api/units. |
@@ -82,4 +82,4 @@ REST contract FE->BE defined in `openapi.json` (OpenAPI 3.0.3). The frontend dep
 
 ## Architecturally Significant Requirements
 - **ASR-1 - Where conversions are executed: client vs server.** Drivers: Need for authoritative, consistent validation and result formatting across all clients; potential future extension to add more unit types or business rules; requirement to return clear validation errors from a single place. Decision: Perform all conversions and compatibility validation on the server-side (stateless API). The frontend handles input convenience and basic pre-checks, but final validation and calculation occur in the backend Conversion Service.
-- **ASR-2 - Technology choice for backend and frontend.** Drivers: Small, latency-sensitive stateless API with straightforward validation and simple JSON DTOs; goal for rapid implementation and clear request/response validation. Decision: Use Python FastAPI for the backend to leverage Pydantic validation and a minimal async framework. Use React for the frontend to provide a responsive SPA and reusable form/result components.
+- **ASR-2 - Technology choice for backend and frontend.** Drivers: Small, latency-sensitive stateless API with straightforward validation and simple JSON DTOs; goal for rapid implementation and clear request/response validation. Decision: Use Java Spring Boot for the backend to leverage Bean Validation, layered architecture, and a mature ecosystem. Use React for the frontend to provide a responsive SPA and reusable form/result components.
