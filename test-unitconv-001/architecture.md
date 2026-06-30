@@ -1,5 +1,8 @@
 # unitconv - Solution Architecture
 
+**Jira Ticket:** DF-001
+
+
 ## Overview
 Stateless measurement conversion web service exposing a Spring Boot REST API supporting metres<->feet, kilometres<->miles, and litres<->gallons with clear validation and measurable NFRs.
 
