@@ -1,9 +1,8 @@
 erDiagram
-  ConversionRequest {
+  Unit {
     uuid id PK
-    number value
-    string sourceUnit
-    string targetUnit
+    string name
+    string system
   }
   ConversionResult {
     uuid id PK
@@ -11,14 +10,4 @@ erDiagram
     string sourceUnit
     string targetUnit
     number result
-  }
-  ValidationError {
-    uuid id PK
-    string message
-    string field
-  }
-  Unit {
-    uuid id PK
-    string name
-    string system
   }
