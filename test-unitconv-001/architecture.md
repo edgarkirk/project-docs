@@ -6,8 +6,6 @@
 ## Overview
 Measurement conversion web service exposing a Spring Boot REST API supporting metres<->feet, kilometres<->miles, and litres<->gallons with clear validation, persistence, and measurable NFRs.
 
-The service is a small HTTP API with simple validation and low computational needs. Java + Spring Boot enables robust development, well-structured layered architecture, and clear request/response validation (Bean Validation).
-
 ## Technology Stack
 | Layer | Choice |
 |-------|--------|
@@ -33,7 +31,7 @@ flowchart TB
 
 ## Data Model
 
-Persisted entities:
+### Persisted Entities
 
 ```mermaid
 erDiagram
@@ -51,27 +49,32 @@ erDiagram
   }
 ```
 
-DTOs (not persisted):
+- **Unit** — represents a supported measurement unit (e.g. metres, feet). Pre-loaded at startup via seed data or migration.
+- **ConversionResult** — stores every successful conversion. The id is server-generated (UUID).
 
-- **ConversionRequest** — inbound request DTO (id, value, sourceUnit, targetUnit). The id is a client-supplied UUID echoed back in the response.
-- **ValidationError** — error response DTO (id, message, field). The field is nullable — present when the error relates to a specific input field, null otherwise.
+### DTOs (not persisted, not in database)
+
+- **ConversionRequest** — inbound request body with fields: value (number), sourceUnit (string), targetUnit (string). No id — the server generates the id when persisting the result.
+- **ConversionResult response** — the API response maps directly from the persisted ConversionResult entity (id, inputValue, sourceUnit, targetUnit, result).
+- **ValidationError** — error response body with fields: id (UUID, always present), message (string, always present), field (string or null — present when the error relates to a specific input field, absent otherwise).
 
 ## API Contract
 REST contract defined in `openapi.json` (OpenAPI 3.0.3).
 
+| Method | Path | Request Body | Success Response | Error Response |
+|--------|------|-------------|-----------------|----------------|
+| POST | /api/convert | ConversionRequest | 200 ConversionResult | 400 ValidationError |
+| GET | /api/units | — | 200 Unit[] | — |
+
 ## Components
 | Component | Repo | Responsibility |
 |-----------|------|----------------|
-| REST Controller | be | Expose REST endpoints (/api/convert, /api/units), request/response validation via Bean Validation, error handling via @RestControllerAdvice. |
+| REST Controller | be | Expose REST endpoints (/api/convert, /api/units), request validation via Bean Validation, error handling via @RestControllerAdvice. |
 | Conversion Service | be | Core conversion logic (metres<->feet, kilometres<->miles, litres<->gallons), unit compatibility checks, numeric precision handling, persisting results. |
-| Unit Repository | be | JPA repository for Unit entity. Units are pre-loaded at startup (seed data or migration). |
-| Conversion Result Repository | be | JPA repository for ConversionResult entity. Stores every successful conversion. |
+| Unit Repository | be | JPA repository for Unit entity. |
+| Conversion Result Repository | be | JPA repository for ConversionResult entity. |
 
 ## Non-Functional Requirements
-- **NFR-1 (performance):** p95 latency for POST /api/convert is under 200ms when subjected to 100 concurrent clients issuing requests with valid inputs.
-- **NFR-2 (security):** All invalid inputs (non-numeric value or incompatible unit pairs) return HTTP 400 with a JSON body containing a 'message' field describing the error.
-- **NFR-3 (reliability):** Error rate for valid conversion requests remains below 0.1% over a 24-hour window under normal load (up to 10k requests/day).
-
-## Architecturally Significant Requirements
-- **ASR-1 - Where conversions are executed: client vs server.** Drivers: Need for authoritative, consistent validation and result formatting across all clients; potential future extension to add more unit types or business rules; requirement to return clear validation errors from a single place. Decision: Perform all conversions and compatibility validation on the server-side. Final validation and calculation occur in the backend Conversion Service.
-- **ASR-2 - Technology choice for backend.** Drivers: Small, latency-sensitive API with straightforward validation and simple JSON DTOs; goal for rapid implementation and clear request/response validation. Decision: Use Java Spring Boot for the backend to leverage Bean Validation, layered architecture, and a mature ecosystem.
+- **NFR-1 (performance):** p95 latency for POST /api/convert under 200ms at 100 concurrent clients.
+- **NFR-2 (security):** All invalid inputs return HTTP 400 with a ValidationError JSON body.
+- **NFR-3 (reliability):** Error rate below 0.1% over 24h under normal load.
