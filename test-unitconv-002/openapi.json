@@ -1,0 +1,157 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "unitconv API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/convert": {
+      "post": {
+        "summary": "Convert a numeric measurement from a source unit to a target unit",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful conversion",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversionResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (missing fields, non-numeric value, incompatible units)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/units": {
+      "get": {
+        "summary": "List supported units and their systems (metric/imperial)",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Unit"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConversionRequest": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "description": "Numeric value to convert"
+          },
+          "sourceUnit": {
+            "type": "string",
+            "description": "Source unit name"
+          },
+          "targetUnit": {
+            "type": "string",
+            "description": "Target unit name"
+          }
+        },
+        "required": ["value", "sourceUnit", "targetUnit"]
+      },
+      "ConversionResult": {
+        "type": "object",
+        "description": "Persisted conversion result returned from the server",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-generated unique identifier of the persisted conversion result"
+          },
+          "inputValue": {
+            "type": "number",
+            "description": "Original input value"
+          },
+          "sourceUnit": {
+            "type": "string",
+            "description": "Source unit name"
+          },
+          "targetUnit": {
+            "type": "string",
+            "description": "Target unit name"
+          },
+          "result": {
+            "type": "number",
+            "description": "Converted value"
+          }
+        },
+        "required": ["id", "inputValue", "sourceUnit", "targetUnit", "result"]
+      },
+      "ValidationError": {
+        "type": "object",
+        "description": "Error response for validation failures",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique error identifier"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "field": {
+            "type": "string",
+            "nullable": true,
+            "description": "Name of the invalid field, or null if not field-specific"
+          }
+        },
+        "required": ["id", "message"]
+      },
+      "Unit": {
+        "type": "object",
+        "description": "Supported measurement unit",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Unit name (e.g. metres, feet)"
+          },
+          "system": {
+            "type": "string",
+            "description": "Measurement system (metric or imperial)"
+          }
+        },
+        "required": ["id", "name", "system"]
+      }
+    }
+  }
+}
