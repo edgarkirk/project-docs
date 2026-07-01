@@ -14,6 +14,7 @@
   - litres <-> gallons
 - Each conversion result must be persisted in the database.
 - The result must be returned as a numeric value.
+- The request includes a client-supplied UUID (id) that is echoed back in the response.
 
 ### REQ-02: List Supported Units
 
@@ -25,15 +26,15 @@
 - Non-numeric values must be rejected.
 - Incompatible unit pairs (e.g., metres to gallons) must be rejected.
 - Missing required fields must be rejected.
-- All validation errors must return HTTP 400 with a JSON body matching the ValidationError schema (id, message, field).
+- All validation errors must return HTTP 400 with a JSON body matching the ValidationError schema (id, message, field). The field is nullable — present when the error relates to a specific input field, null otherwise.
 
 ## Acceptance Criteria
 
 ### AC-01: Successful Conversion
 
-Given a valid value, source unit, and target unit,
+Given a valid id, value, source unit, and target unit,
 When the user submits a conversion via POST /api/convert,
-Then the system persists the result and returns it matching the ConversionResult schema.
+Then the system persists the result and returns it matching the ConversionResult schema with the same id.
 
 ### AC-02: Reverse Conversion
 
@@ -55,7 +56,7 @@ Then the system returns HTTP 400 with a ValidationError indicating invalid input
 
 ### AC-05: Missing Fields Rejected
 
-Given a request missing a required field (value, sourceUnit, or targetUnit),
+Given a request missing a required field (id, value, sourceUnit, or targetUnit),
 When the user submits a conversion,
 Then the system returns HTTP 400 with a ValidationError.
 
