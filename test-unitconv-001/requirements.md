@@ -12,29 +12,30 @@
   - metres <-> feet
   - kilometres <-> miles
   - litres <-> gallons
-- Each conversion result must be persisted in the database.
-- The result must be returned as a numeric value.
-- The request includes a client-supplied UUID (id) that is echoed back in the response.
+- The request contains: value, sourceUnit, targetUnit.
+- Each conversion result must be persisted in the database with a server-generated UUID.
+- The response contains: id (server-generated), inputValue, sourceUnit, targetUnit, result.
 
 ### REQ-02: List Supported Units
 
 - The system must expose the list of supported units with their measurement system (metric/imperial).
 - Units are stored in the database and returned via GET /api/units.
+- Each unit has: id, name, system.
 
 ### REQ-03: Validate Input
 
 - Non-numeric values must be rejected.
 - Incompatible unit pairs (e.g., metres to gallons) must be rejected.
 - Missing required fields must be rejected.
-- All validation errors must return HTTP 400 with a JSON body matching the ValidationError schema (id, message, field). The field is nullable — present when the error relates to a specific input field, null otherwise.
+- All validation errors must return HTTP 400 with a ValidationError body containing: id (UUID), message (string), and optionally field (string or null — present when the error relates to a specific input field).
 
 ## Acceptance Criteria
 
 ### AC-01: Successful Conversion
 
-Given a valid id, value, source unit, and target unit,
+Given a valid value, source unit, and target unit,
 When the user submits a conversion via POST /api/convert,
-Then the system persists the result and returns it matching the ConversionResult schema with the same id.
+Then the system persists the result and returns a ConversionResult with a server-generated id.
 
 ### AC-02: Reverse Conversion
 
@@ -56,7 +57,7 @@ Then the system returns HTTP 400 with a ValidationError indicating invalid input
 
 ### AC-05: Missing Fields Rejected
 
-Given a request missing a required field (id, value, sourceUnit, or targetUnit),
+Given a request missing a required field (value, sourceUnit, or targetUnit),
 When the user submits a conversion,
 Then the system returns HTTP 400 with a ValidationError.
 
