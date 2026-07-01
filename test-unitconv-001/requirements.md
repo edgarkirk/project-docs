@@ -12,26 +12,28 @@
   - metres <-> feet
   - kilometres <-> miles
   - litres <-> gallons
+- Each conversion result must be persisted in the database.
 - The result must be returned as a numeric value.
 
 ### REQ-02: List Supported Units
 
 - The system must expose the list of supported units with their measurement system (metric/imperial).
+- Units are stored in the database and returned via GET /api/units.
 
 ### REQ-03: Validate Input
 
 - Non-numeric values must be rejected.
 - Incompatible unit pairs (e.g., metres to gallons) must be rejected.
 - Missing required fields must be rejected.
-- All validation errors must return HTTP 400 with a JSON body containing a `message` field.
+- All validation errors must return HTTP 400 with a JSON body matching the ValidationError schema (id, message, field).
 
 ## Acceptance Criteria
 
 ### AC-01: Successful Conversion
 
 Given a valid value, source unit, and target unit,
-When the user submits a conversion,
-Then the system returns the converted result.
+When the user submits a conversion via POST /api/convert,
+Then the system persists the result and returns it matching the ConversionResult schema.
 
 ### AC-02: Reverse Conversion
 
@@ -43,30 +45,35 @@ Then the result matches the original value (within rounding precision).
 
 Given source unit "metres" and target unit "gallons",
 When the user submits a conversion,
-Then the system returns HTTP 400 with a message indicating incompatible units.
+Then the system returns HTTP 400 with a ValidationError indicating incompatible units.
 
 ### AC-04: Non-Numeric Value Rejected
 
 Given a non-numeric value (e.g., "abc"),
 When the user submits a conversion,
-Then the system returns HTTP 400 with a message indicating invalid input.
+Then the system returns HTTP 400 with a ValidationError indicating invalid input.
 
 ### AC-05: Missing Fields Rejected
 
-Given a request missing the `value` field,
+Given a request missing a required field (value, sourceUnit, or targetUnit),
 When the user submits a conversion,
-Then the system returns HTTP 400.
+Then the system returns HTTP 400 with a ValidationError.
+
+### AC-06: List Units
+
+Given the system has pre-loaded unit definitions,
+When the user calls GET /api/units,
+Then the system returns all supported units with id, name, and system fields.
 
 ## Business Rules
 
-- Conversions are stateless. Nothing is persisted.
 - Unit compatibility groups: length (metres, feet, kilometres, miles), volume (litres, gallons).
 - Conversion within a group is valid. Cross-group is invalid.
+- Supported units are pre-loaded at application startup (seed data or migration).
 - No user accounts or authentication.
 
 ## Out of Scope
 
-- Persistence or conversion history.
 - User accounts or authentication.
 - Additional unit types beyond the six listed.
 - Batch conversions.
