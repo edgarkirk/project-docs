@@ -8,9 +8,18 @@
     "/api/convert": {
       "post": {
         "summary": "Convert a numeric measurement from a source unit to a target unit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversionRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Successful conversion",
             "content": {
               "application/json": {
                 "schema": {
@@ -18,13 +27,14 @@
                 }
               }
             }
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConversionRequest"
+          },
+          "400": {
+            "description": "Validation error (missing fields, non-numeric value, incompatible units)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
               }
             }
           }
