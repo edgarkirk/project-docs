@@ -9,6 +9,7 @@
       "post": {
         "summary": "Convert a numeric measurement from a source unit to a target unit",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -67,93 +68,89 @@
       "ConversionRequest": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
           "value": {
-            "type": "number"
+            "type": "number",
+            "description": "Numeric value to convert"
           },
           "sourceUnit": {
-            "type": "string"
+            "type": "string",
+            "description": "Source unit name"
           },
           "targetUnit": {
-            "type": "string"
+            "type": "string",
+            "description": "Target unit name"
           }
         },
-        "required": [
-          "id",
-          "value",
-          "sourceUnit",
-          "targetUnit"
-        ]
+        "required": ["value", "sourceUnit", "targetUnit"]
       },
       "ConversionResult": {
         "type": "object",
+        "description": "Persisted conversion result returned from the server",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Server-generated unique identifier of the persisted conversion result"
           },
           "inputValue": {
-            "type": "number"
+            "type": "number",
+            "description": "Original input value"
           },
           "sourceUnit": {
-            "type": "string"
+            "type": "string",
+            "description": "Source unit name"
           },
           "targetUnit": {
-            "type": "string"
+            "type": "string",
+            "description": "Target unit name"
           },
           "result": {
-            "type": "number"
+            "type": "number",
+            "description": "Converted value"
           }
         },
-        "required": [
-          "id",
-          "inputValue",
-          "sourceUnit",
-          "targetUnit",
-          "result"
-        ]
+        "required": ["id", "inputValue", "sourceUnit", "targetUnit", "result"]
       },
       "ValidationError": {
         "type": "object",
+        "description": "Error response for validation failures",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Unique error identifier"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Human-readable error message"
           },
           "field": {
-            "type": "string"
+            "type": "string",
+            "nullable": true,
+            "description": "Name of the invalid field, or null if not field-specific"
           }
         },
-        "required": [
-          "id",
-          "message"
-        ]
+        "required": ["id", "message"]
       },
       "Unit": {
         "type": "object",
+        "description": "Supported measurement unit",
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Unique identifier"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Unit name (e.g. metres, feet)"
           },
           "system": {
-            "type": "string"
+            "type": "string",
+            "description": "Measurement system (metric or imperial)"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "system"
-        ]
+        "required": ["id", "name", "system"]
       }
     }
   }
