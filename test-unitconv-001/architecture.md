@@ -53,8 +53,8 @@ erDiagram
 
 DTOs (not persisted):
 
-- **ConversionRequest** — inbound request DTO (value, sourceUnit, targetUnit)
-- **ValidationError** — error response DTO (id, message, field)
+- **ConversionRequest** — inbound request DTO (id, value, sourceUnit, targetUnit). The id is a client-supplied UUID echoed back in the response.
+- **ValidationError** — error response DTO (id, message, field). The field is nullable — present when the error relates to a specific input field, null otherwise.
 
 ## API Contract
 REST contract defined in `openapi.json` (OpenAPI 3.0.3).
