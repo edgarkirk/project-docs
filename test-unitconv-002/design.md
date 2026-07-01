@@ -54,29 +54,3 @@ graph TD
 
   ConversionHistory --> HistoryItem["HistoryItem[]<br/><i>source → result</i>"]
 ```
-
-## User Flow
-
-```mermaid
-sequenceDiagram
-  participant User
-  participant Frontend
-  participant Backend
-
-  Note over Frontend: Page loads
-  Frontend->>Backend: GET /api/units
-  Backend-->>Frontend: Unit[] (6 units)
-  Frontend->>Frontend: Populate dropdowns
-
-  Note over User: Fills form
-  User->>Frontend: Enter value, select units
-  User->>Frontend: Click Convert
-  Frontend->>Backend: POST /api/convert
-  alt Valid request
-    Backend-->>Frontend: 200 ConversionResult
-    Frontend->>Frontend: Show result, add to history
-  else Invalid request
-    Backend-->>Frontend: 400 ValidationError
-    Frontend->>Frontend: Show error message
-  end
-```
